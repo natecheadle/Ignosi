@@ -1,0 +1,38 @@
+parameters:
+- name: preset
+  type: string
+- name: cmakeArgs
+  type: string
+  default: ''
+
+steps:
+- task: NuGetCommand@2
+  displayName: "Configure API Key"
+  inputs:
+    command: 'custom'
+    arguments: setapikey "AzureDevops" -source "https://pkgs.dev.azure.com/natecheadle/IgnosiGameEngine/_packaging/VCPKG_CACHE/nuget/v3/index.jso"
+
+- task: NuGetAuthenticate@1
+  displayName: "Autheticate to Artifact Feed"
+
+- task: CMake@1
+  displayName: "Configure All"
+  inputs:
+    workingDirectory: '.' 
+    cmakeArgs: --preset ${{ parameters.preset }} -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake -B$(Build.BinariesDirectory) ${{ parameters.cmakeArgs }}
+
+- task: CMake@1
+  displayName: "Build All"
+  inputs:
+    workingDirectory: '.' 
+    cmakeArgs: --build $(Build.BinariesDirectory) 
+    
+- task: CMake@1 
+  displayName: "Install All"
+  inputs:
+    workingDirectory: '.' 
+    cmakeArgs: --install $(Build.BinariesDirectory) --prefix $(Build.ArtifactStagingDirectory) 
+
+- publish: '$(Build.ArtifactStagingDirectory)'
+  displayName: 'Publish Build Artifacts'
+  artifact: $(Agent.JobName)
