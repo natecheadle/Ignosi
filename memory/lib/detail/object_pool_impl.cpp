@@ -1,4 +1,4 @@
-#include "dll_object_pool_data.h"
+#include "object_pool_impl.h"
 
 #include <fmt/format.h>
 
@@ -6,7 +6,7 @@
 
 namespace ignosi::memory::detail {
 
-DllObjectPool::DllObjectPool(size_t objectSize, size_t poolSize)
+ObjectPoolImpl::ObjectPoolImpl(size_t objectSize, size_t poolSize)
     : m_ObjectSize(objectSize),
       m_PoolSize(poolSize),
       m_FreeObjects(poolSize),
@@ -14,44 +14,44 @@ DllObjectPool::DllObjectPool(size_t objectSize, size_t poolSize)
   initializeNewBufferBlock();
 }
 
-void* DllObjectPool::Allocate() {
+void *ObjectPoolImpl::Allocate() {
   try {
-    void* pNew{nullptr};
+    void *pNew{nullptr};
     while (!m_FreeObjects.pop(pNew)) {
       initializeNewBufferBlock();
     }
 
     m_AllocatedCount++;
     return pNew;
-  } catch (const std::exception& ex) {
+  } catch (const std::exception &ex) {
     fmt::print("{}", ex.what());
   }
   return nullptr;
 }
 
-void DllObjectPool::Deallocate(void* pObj) {
+void ObjectPoolImpl::Free(void *pObj) {
   if (!pObj) {
     return;
   }
   try {
     m_FreeObjects.push(pObj);
     m_AllocatedCount--;
-  } catch (std::exception& ex) {
+  } catch (std::exception &ex) {
     fmt::print("{}", ex.what());
   }
 }
 
-size_t DllObjectPool::PoolSize() const { return m_PoolSize; }
-size_t DllObjectPool::AllocatedCount() const { return m_AllocatedCount; }
+size_t ObjectPoolImpl::PoolSize() const { return m_PoolSize; }
+size_t ObjectPoolImpl::AllocatedCount() const { return m_AllocatedCount; }
 
-void DllObjectPool::initializeNewBufferBlock() {
+void ObjectPoolImpl::initializeNewBufferBlock() {
   size_t newSize = ++m_BuffersSize;
 
   std::shared_ptr<std::uint8_t[]> pNewBufferUnique =
       std::shared_ptr<std::uint8_t[]>(
           new std::uint8_t[m_PoolSize * m_ObjectSize]);
 
-  std::uint8_t* pNewBuffer = pNewBufferUnique.get();
+  std::uint8_t *pNewBuffer = pNewBufferUnique.get();
   if (!pNewBuffer) {
     fmt::print("Failed to create new buffer");
     return;

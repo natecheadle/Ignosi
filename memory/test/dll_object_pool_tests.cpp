@@ -2,13 +2,13 @@
 #include <gtest/gtest.h>
 
 #include <cassert>
-#include <dll_object_pool.hpp>
 #include <future>
 #include <iostream>
 #include <memory>
+#include <object_pool.hpp>
 #include <vector>
 
-#include "dll_object_pool.h"
+#include "object_pool.h"
 
 namespace ignosi::memory::test {
 namespace {
@@ -20,40 +20,37 @@ struct Data {
   size_t Value1{0};
   double Value2{0.0};
 
-  friend bool operator==(const Data& lhs, const Data& rhs) = default;
+  friend bool operator==(const Data &lhs, const Data &rhs) = default;
 
-  friend std::ostream& operator<<(std::ostream& os, const Data& value) {
+  friend std::ostream &operator<<(std::ostream &os, const Data &value) {
     os << fmt::format("Value1: {} Value2: {}", value.Value1, value.Value2);
     return os;
   }
 
-  static void* operator new(std::size_t count) {
+  static void *operator new(std::size_t count) {
     assert(sizeof(Data) == count);
-    return IgnosiMemoryPoolAllocate(s_ObjectPool);
+    return s_ObjectPool.Allocate();
   }
 
-  static void* operator new(std::size_t count, void* ptr) {
+  static void *operator new(std::size_t count, void *ptr) {
     assert(sizeof(Data) == count);
     return ptr;
   }
 
-  static void operator delete(void* pObj) {
-    IgnosiMemoryPoolDeallocate(s_ObjectPool, pObj);
-  }
+  static void operator delete(void *pObj) { return s_ObjectPool.Free(pObj); }
 
   static std::size_t AllocatedObjectCount() {
-    return IgnosiMemoryPoolAllocatedCount(s_ObjectPool);
+    return s_ObjectPool.AllocatedCount();
   }
 
-  static std::size_t PoolSize() { return IgnosiMemoryPoolSize(s_ObjectPool); }
+  static std::size_t PoolSize() { return s_ObjectPool.PoolSize(); }
 
   static constexpr size_t kPoolSize = 4;
 
  private:
-  static IgnosiMemoryPool s_ObjectPool;
+  static ObjectPool s_ObjectPool;
 };
-IgnosiMemoryPool Data::s_ObjectPool{
-    IgnosiMemoryPoolCreate(sizeof(Data), Data::kPoolSize)};
+ObjectPool Data::s_ObjectPool{sizeof(Data), Data::kPoolSize};
 
 }  // namespace
 
@@ -90,7 +87,7 @@ class DllObjectPoolFixture : public testing::Test {
 TEST_F(DllObjectPoolFixture, ValidateConstruction) {}
 
 TEST_F(DllObjectPoolFixture, ValidateCreateDestroyPool) {
-  DllObjectPool<Data> pool(10);
+  ConcreteObjectPool<Data> pool(10);
   auto pNewObj = pool.Create();
   auto pNewObj1 = pool.Create(Data(1, 2.0));
   ASSERT_EQ(*pNewObj, Data());
@@ -160,7 +157,7 @@ TEST_F(DllObjectPoolFixture, ValidateCreateDestroyTillFullMultipleThreads) {
       for (size_t i = 0; i < Data::kPoolSize / 2; ++i) {
         objs.push_back(std::make_unique<Data>(i, (double)i));
       }
-      for (auto& obj : objs) {
+      for (auto &obj : objs) {
         if (obj == nullptr) {
           return false;
         }
@@ -207,7 +204,7 @@ TEST_F(DllObjectPoolFixture, ValidateCreateDestroyPastFullMultipleThreads) {
       for (size_t i = 0; i < Data::kPoolSize * 2; ++i) {
         objs.push_back(std::make_unique<Data>(i, (double)i));
       }
-      for (auto& obj : objs) {
+      for (auto &obj : objs) {
         if (obj == nullptr) {
           return false;
         }

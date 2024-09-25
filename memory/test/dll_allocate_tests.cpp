@@ -1,9 +1,9 @@
-#include <dll_allocate.h>
-#include <dll_new.h>
+#include <allocate.h>
 #include <fmt/format.h>
 #include <gtest/gtest.h>
+#include <new.h>
 
-#include <dll_allocator.hpp>
+#include <allocator.hpp>
 #include <memory>
 #include <stdexcept>
 
@@ -14,21 +14,21 @@ struct TestObject {
   TestObject() : Value1(0.0), Value2(0.0) {}
   TestObject(double value1, double value2) : Value1(value1), Value2(value2) {}
 
-  TestObject(const TestObject& other) = default;
-  TestObject(TestObject&& other) = default;
+  TestObject(const TestObject &other) = default;
+  TestObject(TestObject &&other) = default;
 
-  TestObject& operator=(const TestObject& other) = default;
-  TestObject& operator=(TestObject&& other) = default;
+  TestObject &operator=(const TestObject &other) = default;
+  TestObject &operator=(TestObject &&other) = default;
 
   double Value1;
   double Value2;
 
-  friend bool operator==(const TestObject& lhs,
-                         const TestObject& rhs) = default;
-  friend bool operator!=(const TestObject& lhs,
-                         const TestObject& rhs) = default;
+  friend bool operator==(const TestObject &lhs,
+                         const TestObject &rhs) = default;
+  friend bool operator!=(const TestObject &lhs,
+                         const TestObject &rhs) = default;
 
-  friend std::ostream& operator<<(std::ostream& os, const TestObject& value) {
+  friend std::ostream &operator<<(std::ostream &os, const TestObject &value) {
     os << fmt::format("Value1 = {}, Value2 = {}", value.Value1, value.Value2);
     return os;
   }
@@ -46,22 +46,22 @@ struct DerivedTestObject : public TestObject {
     Value3 = value3;
   }
 
-  DerivedTestObject(const DerivedTestObject& other) = default;
-  DerivedTestObject(DerivedTestObject&& other) = default;
+  DerivedTestObject(const DerivedTestObject &other) = default;
+  DerivedTestObject(DerivedTestObject &&other) = default;
 
-  DerivedTestObject& operator=(const DerivedTestObject& other) = default;
-  DerivedTestObject& operator=(DerivedTestObject&& other) = default;
+  DerivedTestObject &operator=(const DerivedTestObject &other) = default;
+  DerivedTestObject &operator=(DerivedTestObject &&other) = default;
 
   double Value3;
 
-  friend bool operator==(const DerivedTestObject& lhs,
-                         const DerivedTestObject& rhs) = default;
-  friend bool operator!=(const DerivedTestObject& lhs,
-                         const DerivedTestObject& rhs) = default;
+  friend bool operator==(const DerivedTestObject &lhs,
+                         const DerivedTestObject &rhs) = default;
+  friend bool operator!=(const DerivedTestObject &lhs,
+                         const DerivedTestObject &rhs) = default;
 
-  friend std::ostream& operator<<(std::ostream& os,
-                                  const DerivedTestObject& value) {
-    os << static_cast<const TestObject&>(value)
+  friend std::ostream &operator<<(std::ostream &os,
+                                  const DerivedTestObject &value) {
+    os << static_cast<const TestObject &>(value)
        << fmt::format(", Value3 = {}", value.Value3);
     return os;
   }
@@ -72,7 +72,7 @@ struct DerivedTestObject : public TestObject {
 class DllAllocateFixture : public testing::Test {};
 
 TEST_F(DllAllocateFixture, validate_new_delete) {
-  TestObject* pObj = nullptr;
+  TestObject *pObj = nullptr;
 
   ASSERT_NO_THROW(pObj = new TestObject());
   ASSERT_NO_THROW(delete pObj;);

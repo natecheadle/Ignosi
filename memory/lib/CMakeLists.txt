@@ -5,17 +5,16 @@ find_package(Boost REQUIRED COMPONENTS lockfree)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_library(
-  ${PROJECT_NAME} "dll_allocate.cpp" "detail/dll_object_pool_data.cpp"
-                  "dll_object_pool.cpp" "dll_new.cpp")
+add_library(${PROJECT_NAME} "allocate.cpp" "detail/object_pool_impl.cpp"
+                            "object_pool.cpp" "new.cpp")
 
 if(BUILD_SHARED_LIBS AND WIN32)
   target_compile_definitions(
     ${PROJECT_NAME}
-    PRIVATE "EXPORT_SPEC=__declspec(dllexport)"
-    INTERFACE "EXPORT_SPEC=__declspec(dllimport)")
+    PRIVATE "MEMORY_EXPORT_SPEC=__declspec(dllexport)"
+    INTERFACE "MEMORY_EXPORT_SPEC=__declspec(dllimport)")
 else()
-  target_compile_definitions(${PROJECT_NAME} PUBLIC "EXPORT_SPEC=")
+  target_compile_definitions(${PROJECT_NAME} PUBLIC "MEMORY_EXPORT_SPEC=")
 endif()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt Boost::lockfree)
@@ -30,6 +29,6 @@ install(
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-install(FILES "dll_allocate.h" "dll_object_pool.h" "dll_allocator.hpp"
-              "dll_object_pool.hpp"
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/ignosi)
+install(FILES "i_object_pool.h" "allocate.h" "object_pool.h" "allocator.hpp"
+              "object_pool.hpp"
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/ignosi/memory)
