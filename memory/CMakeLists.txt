@@ -4,8 +4,6 @@ project(ignosi-memory)
 
 enable_language(CXX)
 
-include(GNUInstallDirs)
-
 add_subdirectory("lib")
 
 if(BUILD_TESTS)
