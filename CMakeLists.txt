@@ -25,3 +25,4 @@ execute_process(
 add_compile_definitions(PUBLIC $<$<CONFIG:Debug>:DEBUG>)
 
 add_subdirectory("memory")
+add_subdirectory("container")
