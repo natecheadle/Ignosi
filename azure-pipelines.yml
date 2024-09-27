@@ -5,11 +5,8 @@ variables:
 - name: VCPKG_BINARY_SOURCES
   value: 'clear;nuget,https://pkgs.dev.azure.com/natecheadle/IgnosiGameEngine/_packaging/VCPKG_CACHE/nuget/v3/index.json,readwrite'
 
-- name: GTEST_OUTPUT
-  value: 'xml:$(System.DefaultWorkingDirectory)/TEST-REPORT.xml'
-
-- name: TEST_APP_NAME
-  value: 'ignosi-memory-test'
+- name: TEST_APP_NAMES
+  value: 'ignosi-memory-test,ignosi-container-test'
 
 stages:
 - stage: BUILD_TEST
@@ -51,10 +48,10 @@ stages:
       parameters:
         preset: $(cmakePreset)
 
-    - template: templates/test-app.yml
-      parameters:
-        test_binaries: 
-        - $(TEST_APP_NAME)
+    - ${{ each app in split(variables.TEST_APP_NAMES, ',')}}:
+      - template: templates/test-app.yml
+        parameters:
+          test_binary: ${{ app }}
 
   - job: LINUX_GCC
     pool:
@@ -86,10 +83,10 @@ stages:
       parameters:
         preset: $(cmakePreset)
 
-    - template: templates/test-app.yml
-      parameters:
-        test_binaries: 
-        - '$(TEST_APP_NAME)'
+    - ${{ each app in split(variables.TEST_APP_NAMES, ',')}}:
+      - template: templates/test-app.yml
+        parameters:
+          test_binary: ${{ app }}
 
   - job: LINUX_LLVM
     pool:
@@ -121,15 +118,12 @@ stages:
       parameters:
         preset: $(cmakePreset)
 
-    - template: templates/test-app.yml
-      parameters:
-        test_binaries: 
-        - $(TEST_APP_NAME)
+    - ${{ each app in split(variables.TEST_APP_NAMES, ',')}}:
+      - template: templates/test-app.yml
+        parameters:
+          test_binary: ${{ app }}
 
   - job: LLVM_CODE_COVERAGE
-    variables:
-    - name: CODE_COVERAGE_NAME
-      value: 'code_coverage'
     steps:
     - template: templates/install-dependencies.yml
       parameters:
@@ -151,22 +145,25 @@ stages:
         preset: Linux-LLVM-Debug
         cmakeArgs: '-DBUILD_COVERAGE=TRUE'
 
-    - script: |
-        export LLVM_PROFILE_FILE='$(CODE_COVERAGE_NAME).profraw'
-        $(Build.ArtifactStagingDirectory)/bin/$(TEST_APP_NAME)
-      displayName: 'Run Unit Tests'
+    - ${{ each app in split(variables.TEST_APP_NAMES, ',')}}:
+      - script: |
+          export LLVM_PROFILE_FILE='${{ app }}.profraw'
+          $(Build.ArtifactStagingDirectory)/bin/${{ app }}
+        displayName: 'Run Unit Tests (${{ app }})'
 
-    - script: |
-        llvm-profdata merge -sparse $(CODE_COVERAGE_NAME).profraw -o $(CODE_COVERAGE_NAME).profdata
-        llvm-cov export $(Build.ArtifactStagingDirectory)/bin/$(TEST_APP_NAME) -instr-profile=$(CODE_COVERAGE_NAME).profdata -ignore-filename-regex="vcpkg|[Tt]est" -format lcov > $(CODE_COVERAGE_NAME).dat
-      displayName: 'Compile Coverage Report'
+      - script: |
+          llvm-profdata merge -sparse ${{ app }}.profraw -o ${{ app }}.profdata
+        displayName: 'Create Code Coverage Data (${{ app }})'
+
+      - script: |
+          llvm-profdata merge -sparse ${{ app }}.profdata -o ${{ app }}.profdata
+          llvm-cov export $(Build.ArtifactStagingDirectory)/bin/${{ app }} -instr-profile=${{ app }}.profdata -ignore-filename-regex="vcpkg|[Tt]est" -format lcov > ${{ app }}.dat
+        displayName: 'Compile Coverage Report (${{ app }})'
 
     - task: reportgenerator@5
-      displayName: 'Report Generator'
+      displayName: 'Publish Code Coverage'
       inputs:
-        reports: '$(CODE_COVERAGE_NAME).dat'
+        reports: ${{ format('{0}{1}', replace(variables.TEST_APP_NAMES, ',', '.dat;'), '.dat') }}
         targetDir: 'coveragereport'
         publishCodeCoverageResults: true
- 
-        
 
