@@ -6,6 +6,10 @@ enable_language(CXX)
 
 include(GNUInstallDirs)
 
+if(MSVC)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /utf-8")
+endif()
+
 if(${BUILD_COVERAGE})
   set(CLANG_COVERAGE_COMPILE_FLAGS
       "-fprofile-instr-generate -fcoverage-mapping")
@@ -24,5 +28,6 @@ execute_process(
 
 add_compile_definitions(PUBLIC $<$<CONFIG:Debug>:DEBUG>)
 
-add_subdirectory("memory")
 add_subdirectory("container")
+add_subdirectory("ecs")
+add_subdirectory("memory")
