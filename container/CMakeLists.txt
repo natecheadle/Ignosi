@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(ignosi-memory)
+project(ignosi-container)
 
 enable_language(CXX)
 

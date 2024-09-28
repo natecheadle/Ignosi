@@ -1,28 +1,19 @@
 parameters:
-- name: test_binaries
-  type: object
+- name: test_binary
+  type: string
 
 steps:
-- ${{ each value in parameters.test_binaries }}:
-  - script: .\${{ value }}
-    displayName: 'Run Unit Tests'
-    workingDirectory: $(Build.ArtifactStagingDirectory)\bin\
-    condition: eq( variables['Agent.OS'], 'Windows_NT' )
-
-  - script: ./${{ value }}
-    displayName: 'Run Unit Tests'
+  - bash: './${{ parameters.test_binary }}'
+    displayName: 'Run Unit Tests (${{ parameters.test_binary }})'
+    env: 
+      GTEST_OUTPUT: 'xml:$(System.DefaultWorkingDirectory)/${{ parameters.test_binary }}-TEST-REPORT.xml'
     workingDirectory: $(Build.ArtifactStagingDirectory)/bin/
-    condition: not(eq( variables['Agent.OS'], 'Windows_NT' ))
 
   - task: PublishTestResults@2
-    displayName: "Publish Test Results"
+    displayName: "Publish Test Results (${{ parameters.test_binary }})"
     inputs:
       testResultsFormat: 'JUnit'
-      testResultsFiles: '**/TEST-REPORT.xml' 
-
-  - task: DeleteFiles@1
-    inputs:
-      Contents: '**/TEST-*.xml'
+      testResultsFiles: '**/${{ parameters.test_binary }}-TEST-REPORT.xml' 
 
 
 
