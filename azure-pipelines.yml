@@ -6,7 +6,7 @@ variables:
   value: 'clear;nuget,https://pkgs.dev.azure.com/natecheadle/IgnosiGameEngine/_packaging/VCPKG_CACHE/nuget/v3/index.json,readwrite'
 
 - name: TEST_APP_NAMES
-  value: 'ignosi-memory-test,ignosi-container-test'
+  value: 'ignosi-memory-test,ignosi-container-test,ignosi-ecs-test'
 
 stages:
 - stage: BUILD_TEST
