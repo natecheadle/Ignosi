@@ -4,6 +4,7 @@
   "dependencies": [
     "gtest",
     "fmt",
-    "boost-lockfree"
+    "boost-lockfree",
+    "gcem"
   ]
 }
