@@ -2,14 +2,13 @@
 
 #include <array>
 #include <cmath>
-#include <concepts>
 #include <cstddef>
 
 #include "float_compare.hpp"
 
 namespace ignosi::math {
 
-template <std::floating_point T, std::size_t SIZE>
+template <typename T, std::size_t SIZE>
 class Vector {
   std::array<T, SIZE> m_Data;
 
@@ -25,9 +24,9 @@ class Vector {
   Vector& operator=(const Vector& other) = default;
   Vector& operator=(Vector&& other) = default;
 
-  template <std::floating_point... Ts>
+  template <typename... Ts>
     requires(sizeof...(Ts) == SIZE)
-  Vector(Ts&&... values) : m_Data({std::forward<Ts>(values)...}) {}
+  Vector(Ts&&... values) : m_Data({T(std::forward<Ts>(values))...}) {}
 
   ~Vector() = default;
 
