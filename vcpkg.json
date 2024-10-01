@@ -5,6 +5,7 @@
     "gtest",
     "fmt",
     "boost-lockfree",
-    "gcem"
+    "gcem",
+    "glm"
   ]
 }

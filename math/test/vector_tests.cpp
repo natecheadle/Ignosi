@@ -5,14 +5,14 @@
 namespace ignosi::math::test {
 
 TEST(Vector_Fixture, ValidateInitialization) {
-  Vector<float, 3> values(1.0f, 2.0f, 3.0f);
+  Vector3<float> values(1.0f, 2.0f, 3.0f);
   ASSERT_EQ(1.0f, values.X());
   ASSERT_EQ(2.0f, values.Y());
   ASSERT_EQ(3.0f, values.Z());
 }
 
 TEST(Vector_Fixture, ValidateXAssignment) {
-  Vector<float, 4> values;
+  Vector4<float> values;
   values.X(2.0);
   ASSERT_EQ(2.0f, values.X());
   ASSERT_EQ(2.0f, values[0]);
@@ -23,7 +23,7 @@ TEST(Vector_Fixture, ValidateXAssignment) {
 }
 
 TEST(Vector_Fixture, ValidateYAssignment) {
-  Vector<float, 4> values;
+  Vector4<float> values;
   values.Y(2.0);
   ASSERT_EQ(2.0f, values.Y());
   ASSERT_EQ(2.0f, values[1]);
@@ -34,7 +34,7 @@ TEST(Vector_Fixture, ValidateYAssignment) {
 }
 
 TEST(Vector_Fixture, ValidateZAssignment) {
-  Vector<float, 4> values;
+  Vector4<float> values;
   values.Z(2.0);
   ASSERT_EQ(2.0f, values.Z());
   ASSERT_EQ(2.0f, values[2]);
@@ -45,7 +45,7 @@ TEST(Vector_Fixture, ValidateZAssignment) {
 }
 
 TEST(Vector_Fixture, ValidateWAssignment) {
-  Vector<float, 4> values;
+  Vector4<float> values;
   values.W(2.0);
   ASSERT_EQ(2.0f, values.W());
   ASSERT_EQ(2.0f, values[3]);
