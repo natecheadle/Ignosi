@@ -10,9 +10,8 @@ add_executable(${PROJECT_NAME} "main.cpp" "vector_tests.cpp" "matrix_tests.cpp")
 
 find_package(GTest CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
-find_package(fmt CONFIG REQUIRED)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE GTest::gtest ignosi-math fmt::fmt glm::glm)
+target_link_libraries(${PROJECT_NAME} PRIVATE GTest::gtest ignosi-math glm::glm)
 
 gtest_add_tests(TARGET ${PROJECT_NAME})
 

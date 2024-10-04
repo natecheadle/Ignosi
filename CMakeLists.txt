@@ -20,6 +20,10 @@ if(NOT DEFINED BUILD_TESTS)
   set(BUILD_TESTS TRUE)
 endif()
 
+set(CMAKE_MACOSX_RPATH 1)
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+set(CMAKE_INSTALL_RPATH "../lib")
+
 execute_process(
   COMMAND
     ${CMAKE_COMMAND} -E create_symlink

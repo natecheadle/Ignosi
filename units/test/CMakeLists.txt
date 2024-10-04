@@ -9,10 +9,9 @@ set(CMAKE_CXX_STANDARD 20)
 add_executable(${PROJECT_NAME} "main.cpp" "angle_units_tests.cpp")
 
 find_package(GTest CONFIG REQUIRED)
-find_package(fmt CONFIG REQUIRED)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE GTest::gtest ignosi-units
-                                              ignosi-string fmt::fmt)
+                                              ignosi-string)
 
 gtest_add_tests(TARGET ${PROJECT_NAME})
 

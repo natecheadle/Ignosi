@@ -13,7 +13,7 @@ find_package(GTest CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE GTest::gtest ignosi-memory
-                                              fmt::fmt)
+                                              fmt::fmt-header-only)
 
 gtest_add_tests(TARGET ${PROJECT_NAME})
 
