@@ -34,6 +34,7 @@ add_compile_definitions(PUBLIC $<$<CONFIG:Debug>:DEBUG>)
 
 add_subdirectory("container")
 add_subdirectory("ecs")
+add_subdirectory("demos")
 add_subdirectory("math")
 add_subdirectory("memory")
 add_subdirectory("string")
