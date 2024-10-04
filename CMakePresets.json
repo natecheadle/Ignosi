@@ -13,8 +13,8 @@
       "cacheVariables": {
         "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
-        "X_VCPKG_APPLOCAL_DEPS_INSTALL": "ON"
-
+        "X_VCPKG_APPLOCAL_DEPS_INSTALL": "ON",
+        "BUILD_SHARED_LIBS": "TRUE"
       }
     },
     {

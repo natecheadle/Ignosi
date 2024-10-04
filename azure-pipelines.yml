@@ -143,7 +143,7 @@ stages:
     - template: templates/build-app.yml
       parameters:
         preset: Linux-LLVM-Debug
-        cmakeArgs: '-DBUILD_COVERAGE=TRUE'
+        cmakeArgs: '-DBUILD_COVERAGE=TRUE -DBUILD_SHARED_LIBS=FALSE'
 
     - ${{ each app in split(variables.TEST_APP_NAMES, ',')}}:
       - script: |

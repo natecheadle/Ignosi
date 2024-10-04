@@ -17,7 +17,8 @@ else()
   target_compile_definitions(${PROJECT_NAME} PUBLIC "MEMORY_EXPORT_SPEC=")
 endif()
 
-target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt Boost::lockfree)
+target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt-header-only
+                                              Boost::lockfree)
 
 target_include_directories(
   ${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
