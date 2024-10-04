@@ -6,6 +6,7 @@
     "fmt",
     "boost-lockfree",
     "gcem",
-    "glm"
+    "glm",
+    "glfw3"
   ]
 }
