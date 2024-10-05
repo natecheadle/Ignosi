@@ -91,6 +91,9 @@ class Vector {
     return rslt;
   }
 
+  T* Data() { return m_Data.data(); }
+  const T* Data() const { return m_Data.data(); }
+
   iterator begin() { return m_Data.begin(); }
 
   const_iterator begin() const { return m_Data.begin(); }

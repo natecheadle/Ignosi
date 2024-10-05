@@ -34,3 +34,13 @@ void IgnosiWindowPollEvents(void *obj) {
 
   static_cast<detail::IWindow *>(obj)->PollEvents();
 }
+
+IgnosiWindowSize IgnosiWindowGetActualSize(void *obj) {
+  if (!obj) return IgnosiWindowSize{};
+
+  return static_cast<detail::IWindow *>(obj)->GetActualSize();
+}
+
+float IgnosiWindowAspectRatio(const IgnosiWindowSize &size) {
+  return static_cast<float>(size.Width) / static_cast<float>(size.Height);
+}

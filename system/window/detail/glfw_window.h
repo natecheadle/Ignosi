@@ -16,5 +16,6 @@ class GLFWWindow : public IWindow {
   bool ShouldClose() const override;
   void SwapBuffers() const override;
   void PollEvents() const override;
+  IgnosiWindowSize GetActualSize() const override;
 };
 }  // namespace ignosi::system::detail

@@ -1,5 +1,7 @@
 #include "glfw_window.h"
 
+#include <GLFW/glfw3.h>
+
 namespace ignosi::system::detail {
 GLFWWindow::GLFWWindow(const IgnosiWindowSize& size) {
   m_pWindow = glfwCreateWindow(size.Height, size.Width, "", nullptr, nullptr);
@@ -15,4 +17,9 @@ void GLFWWindow::SwapBuffers() const { glfwSwapBuffers(m_pWindow); }
 
 void GLFWWindow::PollEvents() const { glfwPollEvents(); }
 
+IgnosiWindowSize GLFWWindow::GetActualSize() const {
+  IgnosiWindowSize rslt{0, 0};
+  glfwGetWindowSize(m_pWindow, &rslt.Width, &rslt.Height);
+  return rslt;
+}
 }  // namespace ignosi::system::detail
