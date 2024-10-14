@@ -1,11 +1,8 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(ignosi-container)
+project(${PROJECT_NAME}-container)
 
 enable_language(CXX)
 
 add_subdirectory("lib")
-
-if(BUILD_TESTS)
-  add_subdirectory("test")
-endif()
+add_subdirectory("test")

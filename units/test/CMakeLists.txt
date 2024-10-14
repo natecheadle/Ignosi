@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.21)
 project(ignosi-units-test)
 
 include(GoogleTest)
+include(CopyDlls)
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -13,17 +14,8 @@ find_package(GTest CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE GTest::gtest ignosi-units
                                               ignosi-string)
 
+copy_dlls(${PROJECT_NAME})
 gtest_add_tests(TARGET ${PROJECT_NAME})
-
-if(WIN32)
-
-  add_custom_command(
-    TARGET ${PROJECT_NAME}
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:${PROJECT_NAME}>
-            $<TARGET_FILE_DIR:${PROJECT_NAME}>
-    COMMAND_EXPAND_LISTS)
-endif()
 
 install(
   TARGETS ${PROJECT_NAME}

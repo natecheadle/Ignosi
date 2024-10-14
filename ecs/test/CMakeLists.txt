@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(ignosi-ecs-test)
+project(${PROJECT_NAME}-test)
 
 include(GoogleTest)
+include(CopyDlls)
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -12,6 +13,7 @@ find_package(GTest CONFIG REQUIRED)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE GTest::gtest ignosi-ecs)
 
+copy_dlls(${PROJECT_NAME})
 gtest_add_tests(TARGET ${PROJECT_NAME})
 
 install(
