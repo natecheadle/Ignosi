@@ -2,11 +2,14 @@ trigger:
   - master
 
 variables:
-- name: VCPKG_BINARY_SOURCES
-  value: 'clear;nuget,https://pkgs.dev.azure.com/natecheadle/IgnosiGameEngine/_packaging/VCPKG_CACHE/nuget/v3/index.json,readwrite'
+- name: VCPKG_NUGET
+  value: 'https://pkgs.dev.azure.com/natecheadle/IgnosiGameEngine/_packaging/VCPKG_CACHE/nuget/v3/index.json'
 
-- name: TEST_APP_NAMES
-  value: 'ignosi-memory-test,ignosi-container-test,ignosi-ecs-test,ignosi-math-test,ignosi-units-test,ignosi-string-test'
+- name: VCPKG_BINARY_SOURCES
+  value: 'clear;nuget,$(VCPKG_NUGET),readwrite'
+
+- name: GTEST_OUTPUT
+  value: 'xml:TEST-REPORT.xml'
 
 stages:
 - stage: BUILD_TEST
@@ -44,14 +47,9 @@ stages:
         choco install ninja
       displayName: "Install Dependencies"
 
-    - template: templates/build-app.yml
+    - template: templates/build-test.yml
       parameters:
         preset: $(cmakePreset)
-
-    - ${{ each app in split(variables.TEST_APP_NAMES, ',')}}:
-      - template: templates/test-app.yml
-        parameters:
-          test_binary: ${{ app }}
 
   - job: LINUX_GCC
     pool:
@@ -78,20 +76,15 @@ stages:
 
       displayName: "Configure Compiler Version"
 
-
-    - template: templates/build-app.yml
+    - template: templates/build-test.yml
       parameters:
         preset: $(cmakePreset)
-
-    - ${{ each app in split(variables.TEST_APP_NAMES, ',')}}:
-      - template: templates/test-app.yml
-        parameters:
-          test_binary: ${{ app }}
 
   - job: LINUX_LLVM
     pool:
       vmImage: ubuntu-latest
 
+    
     strategy:
       matrix:
         DEBUG_15:
@@ -114,20 +107,20 @@ stages:
         sudo ln -s /usr/bin/clang++-$(llvmVersion) /usr/bin/clang++
       displayName: "Configure Compiler Version"
 
-    - template: templates/build-app.yml
+    - template: templates/build-test.yml
       parameters:
         preset: $(cmakePreset)
 
-    - ${{ each app in split(variables.TEST_APP_NAMES, ',')}}:
-      - template: templates/test-app.yml
-        parameters:
-          test_binary: ${{ app }}
-
   - job: LLVM_CODE_COVERAGE
+    variables:
+    - name: CODE_COVERAGE_NAME
+      value: 'code_coverage'
+
     steps:
+   
     - template: templates/install-dependencies.yml
       parameters:
-        dependencies: 'ninja-build libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev pkg-config'
+        dependencies: 'parallel ninja-build libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev pkg-config'
 
     - script: |
         sudo rm /usr/bin/clang
@@ -140,30 +133,25 @@ stages:
         sudo ln -s /usr/bin/llvm-cov-15 /usr/bin/llvm-cov
       displayName: "Configure Compiler Version"
 
-    - template: templates/build-app.yml
+    - script: |
+        export LLVM_PROFILE_FILE='$(CODE_COVERAGE_NAME).profraw'
+      displayName: 'Set Output File Name'
+
+    - template: templates/build-test.yml
       parameters:
         preset: Linux-LLVM-Debug
-        cmakeArgs: '-DBUILD_COVERAGE=TRUE -DBUILD_SHARED_LIBS=FALSE'
+        cmakeArgs: '-DBUILD_COVERAGE=TRUE'
 
-    - ${{ each app in split(variables.TEST_APP_NAMES, ',')}}:
-      - script: |
-          export LLVM_PROFILE_FILE='${{ app }}.profraw'
-          $(Build.ArtifactStagingDirectory)/bin/${{ app }}
-        displayName: 'Run Unit Tests (${{ app }})'
-
-      - script: |
-          llvm-profdata merge -sparse ${{ app }}.profraw -o ${{ app }}.profdata
-        displayName: 'Create Code Coverage Data (${{ app }})'
-
-      - script: |
-          llvm-profdata merge -sparse ${{ app }}.profdata -o ${{ app }}.profdata
-          llvm-cov export $(Build.ArtifactStagingDirectory)/bin/${{ app }} -instr-profile=${{ app }}.profdata -ignore-filename-regex="vcpkg|[Tt]est" -format lcov > ${{ app }}.dat
-        displayName: 'Compile Coverage Report (${{ app }})'
+    - script: |
+        find $(Build.BinariesDirectory) -name "*.profraw" | xargs llvm-profdata merge -sparse -o $(CODE_COVERAGE_NAME).profdata 
+        find $(Build.ArtifactStagingDirectory) -name "*test" -o -name "*.so" | parallel --verbose --xargs -n 1 'llvm-cov export "{}" -instr-profile=$(CODE_COVERAGE_NAME).profdata -format=lcov > $(CODE_COVERAGE_NAME)_{/.}.dat'
+        export REPORTS="$(find ./ -name "code_coverage*.dat" | tr '\n' ';' | sed 's/.$//')"
+        echo "##vso[task.setvariable variable=COVERAGE_REPORTS]$REPORTS"
+      displayName: 'Compile Coverage Report'
 
     - task: reportgenerator@5
-      displayName: 'Publish Code Coverage'
+      displayName: 'Report Generator'
       inputs:
-        reports: ${{ format('{0}{1}', replace(variables.TEST_APP_NAMES, ',', '.dat;'), '.dat') }}
+        reports: '$(COVERAGE_REPORTS)'
         targetDir: 'coveragereport'
         publishCodeCoverageResults: true
-

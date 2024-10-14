@@ -6,13 +6,13 @@
 
 extern "C" {
 
-SYSTEM_EXPORT_SPEC void *IgnosiWindowCreateGLFW(const IgnosiWindowSize &size);
-SYSTEM_EXPORT_SPEC void IgnosiWindowDestroy(void *obj);
-SYSTEM_EXPORT_SPEC void IgnosiWindowGLFWTerminate();
+void *IgnosiWindowCreateGLFW(const IgnosiWindowSize &size);
+void IgnosiWindowDestroy(void *obj);
+void IgnosiWindowGLFWTerminate();
 
-SYSTEM_EXPORT_SPEC int IgnosiWindowShouldClose(void *obj);
-SYSTEM_EXPORT_SPEC void IgnosiWindowSwapBuffers(void *obj);
-SYSTEM_EXPORT_SPEC void IgnosiWindowPollEvents(void *obj);
+int IgnosiWindowShouldClose(void *obj);
+void IgnosiWindowSwapBuffers(void *obj);
+void IgnosiWindowPollEvents(void *obj);
 }
 
 namespace ignosi::system {

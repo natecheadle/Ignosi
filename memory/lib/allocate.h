@@ -3,8 +3,8 @@
 #include <cstddef>
 
 extern "C" {
-MEMORY_EXPORT_SPEC void *IgnosiMemoryAllocate(size_t size);
-MEMORY_EXPORT_SPEC void IgnosiMemoryFree(void *obj);
+void *IgnosiMemoryAllocate(size_t size);
+void IgnosiMemoryFree(void *obj);
 }
 
 namespace ignosi::memory {
