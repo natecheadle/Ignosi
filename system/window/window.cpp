@@ -1,36 +1,57 @@
 #include "window.h"
 
+#include <handle.h>
+#include <pointer_handle_manager.h>
+
 #include "detail/glfw_window.h"
 
 using namespace ignosi::system;
+using namespace ignosi::dll;
 
-void *IgnosiWindowCreateGLFW(const IgnosiWindowSize &size) {
+namespace {
+using WindowHandleManager =
+    PointerHandleManager<detail::IWindow, IgnosiWindowHandle>;
+using InternalWindowHandle = WindowHandleManager::HANDLE_T;
+
+WindowHandleManager HandleManager;
+}  // namespace
+
+IgnosiWindowHandle IgnosiWindowCreateGLFW(const IgnosiWindowSize &size) {
   if (!glfwInit()) {
-    return nullptr;
+    return {nullptr};
   }
-  return new detail::GLFWWindow(size);
+  return HandleManager.AddObject(std::make_unique<detail::GLFWWindow>(size))
+      .ExportValue();
 }
 
-void IgnosiWindowDestroy(void *obj) {
-  if (obj) {
-    delete static_cast<detail::IWindow *>(obj);
-  }
+void IgnosiWindowDestroy(IgnosiWindowHandle obj) {
+  HandleManager.DestroyObject(obj);
 }
 
 void IgnosiWindowGLFWTerminate() { glfwTerminate(); }
 
-int IgnosiWindowShouldClose(void *obj) {
-  if (!obj) return -1;
-
-  return static_cast<detail::IWindow *>(obj)->ShouldClose() ? 1 : 0;
+IgnosiBool IgnosiWindowShouldClose(IgnosiWindowHandle obj) {
+  return HandleManager.Execute<IgnosiBool>(
+      obj, [](detail::IWindow *pWin) -> IgnosiBool {
+        if (pWin) {
+          return pWin->ShouldClose() ? IgnosiBool::True : IgnosiBool::False;
+        }
+        return IgnosiBool::True;
+      });
 }
-void IgnosiWindowSwapBuffers(void *obj) {
-  if (!obj) return;
 
-  static_cast<detail::IWindow *>(obj)->SwapBuffers();
+void IgnosiWindowSwapBuffers(IgnosiWindowHandle obj) {
+  HandleManager.ExecuteVoid(obj, [](detail::IWindow *pWin) -> void {
+    if (pWin) {
+      pWin->SwapBuffers();
+    }
+  });
 }
-void IgnosiWindowPollEvents(void *obj) {
-  if (!obj) return;
 
-  static_cast<detail::IWindow *>(obj)->PollEvents();
+void IgnosiWindowPollEvents(IgnosiWindowHandle obj) {
+  HandleManager.ExecuteVoid(obj, [](detail::IWindow *pWin) -> void {
+    if (pWin) {
+      pWin->PollEvents();
+    }
+  });
 }
