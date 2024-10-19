@@ -11,6 +11,8 @@ add_library(${PROJECT_NAME} "allocate.cpp" "detail/object_pool_impl.cpp"
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt-header-only
                                               Boost::lockfree)
 
+target_link_libraries(${PROJECT_NAME} PUBLIC ignosi-dll)
+
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 install(

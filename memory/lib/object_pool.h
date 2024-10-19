@@ -4,7 +4,9 @@
 
 #include "i_object_pool.h"
 
-using IgnosiMemoryPoolHandle = void *;
+struct IgnosiMemoryPoolHandle {
+  void *Value;
+};
 
 extern "C" {
 IgnosiMemoryPoolHandle IgnosiMemoryPoolCreate(size_t objectSize,
