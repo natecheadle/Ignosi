@@ -15,7 +15,7 @@ class Camera_Fly : public Camera {
   units::Radian<float> m_MaxRot{M_PI_2};
 
  public:
-  Camera_Fly(void* pWindow);
+  Camera_Fly(const system::Window& window);
   virtual ~Camera_Fly() = default;
 
   float ZoomSpeed() const;

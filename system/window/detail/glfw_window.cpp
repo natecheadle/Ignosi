@@ -13,9 +13,9 @@ bool GLFWWindow::ShouldClose() const {
   return glfwWindowShouldClose(m_pWindow);
 }
 
-void GLFWWindow::SwapBuffers() const { glfwSwapBuffers(m_pWindow); }
+void GLFWWindow::SwapBuffers() { glfwSwapBuffers(m_pWindow); }
 
-void GLFWWindow::PollEvents() const { glfwPollEvents(); }
+void GLFWWindow::PollEvents() { glfwPollEvents(); }
 
 IgnosiWindowSize GLFWWindow::GetActualSize() const {
   IgnosiWindowSize rslt{0, 0};

@@ -4,8 +4,8 @@
 #include <vector.hpp>
 
 namespace ignosi::render {
-Camera2D::Camera2D(void* pWindow)
-    : Camera(pWindow), m_Pitch(0.0), m_Yaw(-std::numbers::pi_v<float> / 2.0f) {
+Camera2D::Camera2D(const system::Window& window)
+    : Camera(window), m_Pitch(0.0), m_Yaw(-std::numbers::pi_v<float> / 2.0f) {
   Near(-1.0);
   Far(1.0);
 }

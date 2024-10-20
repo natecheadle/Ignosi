@@ -8,20 +8,12 @@ set(CMAKE_CXX_STANDARD 20)
 add_library(${PROJECT_NAME} "allocate.cpp" "detail/object_pool_impl.cpp"
                             "object_pool.cpp" "new.cpp")
 
-if(BUILD_SHARED_LIBS AND WIN32)
-  target_compile_definitions(
-    ${PROJECT_NAME}
-    PRIVATE "MEMORY_EXPORT_SPEC=__declspec(dllexport)"
-    INTERFACE "MEMORY_EXPORT_SPEC=__declspec(dllimport)")
-else()
-  target_compile_definitions(${PROJECT_NAME} PUBLIC "MEMORY_EXPORT_SPEC=")
-endif()
-
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt-header-only
                                               Boost::lockfree)
 
-target_include_directories(
-  ${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
+target_link_libraries(${PROJECT_NAME} PUBLIC ignosi-dll)
+
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 install(
   TARGETS ${PROJECT_NAME}

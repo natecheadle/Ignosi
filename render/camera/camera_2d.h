@@ -12,7 +12,7 @@ class Camera2D : public Camera {
   units::Radian<float> m_MaxRot{M_PI_2};
 
  public:
-  Camera2D(void* pWindow);
+  Camera2D(const system::Window& window);
   virtual ~Camera2D() = default;
 
   float ZoomSpeed() const { return m_ZoomSpeed; }

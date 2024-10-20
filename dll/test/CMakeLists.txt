@@ -7,11 +7,11 @@ include(CopyDlls)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(${PROJECT_NAME} "main.cpp" "ring_buffer_tests.cpp")
+add_executable(${PROJECT_NAME} "main.cpp" "pointer_handle_manager_tests.cpp")
 
 find_package(GTest CONFIG REQUIRED)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE GTest::gtest ignosi-container)
+target_link_libraries(${PROJECT_NAME} PRIVATE GTest::gtest ignosi-dll)
 copy_dlls(${PROJECT_NAME})
 
 gtest_add_tests(TARGET ${PROJECT_NAME})

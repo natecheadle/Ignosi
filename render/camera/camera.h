@@ -1,5 +1,7 @@
 #pragma once
 
+#include <window/window.h>
+
 #include <radian.hpp>
 #include <square_matrix.hpp>
 #include <vector.hpp>
@@ -14,10 +16,10 @@ class Camera {
   float m_Near{0.1};
   float m_Far{100.0};
 
-  void* m_pWindow;
+  const system::Window& m_Window;
 
  public:
-  Camera(void* pWindow);
+  Camera(const system::Window& window);
   virtual ~Camera();
 
   virtual math::SquareMatrix4x4<float> Projection() const;
@@ -41,6 +43,6 @@ class Camera {
   void Translate(const math::Vector3<float>& value);
 
  protected:
-  const void* Window() const { return m_pWindow; }
+  const system::Window& Window() const { return m_Window; }
 };
 }  // namespace ignosi::render

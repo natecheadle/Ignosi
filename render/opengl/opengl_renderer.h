@@ -1,18 +1,19 @@
 #pragma once
 
 #include "irenderer.h"
+#include "window/window.h"
 
 namespace ignosi::render {
 class OpenGL_Renderer : public IRenderer {
-  void* m_pWindow;
+  system::Window m_Window;
   std::shared_ptr<Camera> m_pCamera;
 
  public:
   OpenGL_Renderer() = default;
   ~OpenGL_Renderer() override = default;
 
-  void* AttachedWindow() const override;
-  void* AttachWindow(void* pWindow) override;
+  const system::Window& AttachedWindow() const override;
+  void AttachWindow(system::Window pWindow) override;
 
   void AttachedCamera(std::shared_ptr<Camera> camera) override;
   const std::shared_ptr<Camera>& AttachedCamera() const override;
@@ -44,7 +45,7 @@ class OpenGL_Renderer : public IRenderer {
 
   void ClearDepthBuffer() const override;
   void ClearColorBuffer() const override;
-  void SwapBuffers() const override;
+  void SwapBuffers() override;
 
   void Draw(const Mesh& mesh) const override;
 };

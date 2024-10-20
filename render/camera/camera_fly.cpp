@@ -5,8 +5,8 @@
 
 namespace ignosi::render {
 
-Camera_Fly::Camera_Fly(void* pWindow)
-    : Camera(pWindow), m_Pitch(0.0), m_Yaw(-M_PI_2) {}
+Camera_Fly::Camera_Fly(const system::Window& window)
+    : Camera(window), m_Pitch(0.0), m_Yaw(-M_PI_2) {}
 
 float Camera_Fly::ZoomSpeed() const { return m_ZoomSpeed; }
 

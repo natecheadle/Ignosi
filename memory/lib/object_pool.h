@@ -4,22 +4,18 @@
 
 #include "i_object_pool.h"
 
-using IgnosiMemoryPoolHandle = void *;
+struct IgnosiMemoryPoolHandle {
+  void *Value;
+};
 
 extern "C" {
-MEMORY_EXPORT_SPEC IgnosiMemoryPoolHandle
-IgnosiMemoryPoolCreate(size_t objectSize, size_t poolSize);
-
-MEMORY_EXPORT_SPEC void IgnosiMemoryPoolDestroy(IgnosiMemoryPoolHandle obj);
-
-MEMORY_EXPORT_SPEC void *IgnosiMemoryPoolAllocate(IgnosiMemoryPoolHandle pool);
-
-MEMORY_EXPORT_SPEC void IgnosiMemoryPoolFree(IgnosiMemoryPoolHandle pool,
-                                             void *pObj);
-MEMORY_EXPORT_SPEC size_t IgnosiMemoryPoolSize(IgnosiMemoryPoolHandle pool);
-
-MEMORY_EXPORT_SPEC size_t
-IgnosiMemoryPoolAllocatedCount(IgnosiMemoryPoolHandle pool);
+IgnosiMemoryPoolHandle IgnosiMemoryPoolCreate(size_t objectSize,
+                                              size_t poolSize);
+void IgnosiMemoryPoolDestroy(IgnosiMemoryPoolHandle obj);
+void *IgnosiMemoryPoolAllocate(IgnosiMemoryPoolHandle pool);
+void IgnosiMemoryPoolFree(IgnosiMemoryPoolHandle pool, void *pObj);
+size_t IgnosiMemoryPoolSize(IgnosiMemoryPoolHandle pool);
+size_t IgnosiMemoryPoolAllocatedCount(IgnosiMemoryPoolHandle pool);
 }
 
 namespace ignosi::memory {

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <window/window.h>
+
 #include <memory>
 #include <span>
 
@@ -26,8 +28,8 @@ class IRenderer {
 
   static std::unique_ptr<IRenderer> Create();
 
-  virtual void* AttachedWindow() const = 0;
-  virtual void* AttachWindow(void* pWindow) = 0;
+  virtual const system::Window& AttachedWindow() const = 0;
+  virtual void AttachWindow(system::Window pWindow) = 0;
 
   virtual void AttachedCamera(std::shared_ptr<Camera> camera) = 0;
   virtual const std::shared_ptr<Camera>& AttachedCamera() const = 0;
@@ -59,7 +61,7 @@ class IRenderer {
 
   virtual void ClearDepthBuffer() const = 0;
   virtual void ClearColorBuffer() const = 0;
-  virtual void SwapBuffers() const = 0;
+  virtual void SwapBuffers() = 0;
 
   virtual void Draw(const Mesh& mesh) const = 0;
 };

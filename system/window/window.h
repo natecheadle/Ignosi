@@ -1,42 +1,58 @@
 #pragma once
 
+#include <bool.h>
+
 #include <cstddef>
 
 #include "window_size.h"
 
 extern "C" {
 
-SYSTEM_EXPORT_SPEC void *IgnosiWindowCreateGLFW(const IgnosiWindowSize &size);
-SYSTEM_EXPORT_SPEC void IgnosiWindowDestroy(void *obj);
-SYSTEM_EXPORT_SPEC void IgnosiWindowGLFWTerminate();
+struct IgnosiWindowHandle {
+  void *Value;
+};
 
-SYSTEM_EXPORT_SPEC int IgnosiWindowShouldClose(void *obj);
-SYSTEM_EXPORT_SPEC void IgnosiWindowSwapBuffers(void *obj);
-SYSTEM_EXPORT_SPEC void IgnosiWindowPollEvents(void *obj);
-SYSTEM_EXPORT_SPEC IgnosiWindowSize IgnosiWindowGetActualSize(void *obj);
-SYSTEM_EXPORT_SPEC float IgnosiWindowAspectRatio(const IgnosiWindowSize &size);
+IgnosiWindowHandle IgnosiWindowCreateGLFW(const IgnosiWindowSize &size);
+void IgnosiWindowDestroy(IgnosiWindowHandle obj);
+void IgnosiWindowGLFWTerminate();
+
+IgnosiBool IgnosiWindowShouldClose(const IgnosiWindowHandle obj);
+void IgnosiWindowSwapBuffers(IgnosiWindowHandle obj);
+IgnosiWindowSize IgnosiWindowGetActualSize(const IgnosiWindowHandle obj);
+float IgnosiWindowGetAspectRatio(const IgnosiWindowSize &size);
+void IgnosiWindowPollEvents(IgnosiWindowHandle obj);
 }
 
 namespace ignosi::system {
-inline void *CreateWindowGLFW(const IgnosiWindowSize &size) {
-  return IgnosiWindowCreateGLFW(size);
-}
-inline void DestroyWindow(void *obj) { return IgnosiWindowDestroy(obj); }
+class Window {
+  IgnosiWindowHandle m_Handle;
 
-inline bool ShouldWindowClose(void *obj) {
-  return IgnosiWindowShouldClose(obj) != 0;
-}
+ public:
+  inline Window() : m_Handle(nullptr) {}
+  inline Window(const IgnosiWindowSize &size)
+      : m_Handle(IgnosiWindowCreateGLFW(size)) {}
 
-inline void WindowSwapBuffers(void *obj) { IgnosiWindowSwapBuffers(obj); }
+  inline ~Window() { IgnosiWindowDestroy(m_Handle); }
 
-inline void WindowPollEvents(void *obj) { IgnosiWindowPollEvents(obj); }
+  Window(const Window &other) = delete;
+  Window(Window &&other) noexcept = default;
 
-inline IgnosiWindowSize WindowGetSize(void *obj) {
-  return IgnosiWindowGetActualSize(obj);
-}
+  Window &operator=(const Window &other) = delete;
+  Window &operator=(Window &&other) noexcept = default;
 
-inline float WindowGetAspectRatio(IgnosiWindowSize &size) {
-  return IgnosiWindowAspectRatio(size);
-}
+  inline bool ShouldClose() const {
+    return IgnosiWindowShouldClose(m_Handle) == IgnosiBool::True;
+  }
+  inline void SwapBuffers() { IgnosiWindowSwapBuffers(m_Handle); }
+
+  inline void PollEvents() { IgnosiWindowPollEvents(m_Handle); }
+
+  inline IgnosiWindowSize GetActualSize() const {
+    return IgnosiWindowGetActualSize(m_Handle);
+  }
+  inline static float GetAspectRatio(IgnosiWindowSize &size) {
+    return IgnosiWindowGetAspectRatio(size);
+  }
+};
 
 }  // namespace ignosi::system

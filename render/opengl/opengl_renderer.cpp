@@ -17,10 +17,12 @@
 #include "opengl_vertex_buffer.h"
 
 namespace ignosi::render {
-void* OpenGL_Renderer::AttachedWindow() const { return m_pWindow; }
+const system::Window& OpenGL_Renderer::AttachedWindow() const {
+  return m_Window;
+}
 
-void* OpenGL_Renderer::AttachWindow(void* pWindow) {
-  m_pWindow = pWindow;
+void OpenGL_Renderer::AttachWindow(system::Window window) {
+  m_Window = std::move(window);
 
   // glad: load all OpenGL function pointers
   // ---------------------------------------
@@ -28,15 +30,13 @@ void* OpenGL_Renderer::AttachWindow(void* pWindow) {
     throw std::runtime_error("Failed to initialize GLAD");
   }
 
-  IgnosiWindowSize size = system::WindowGetSize(m_pWindow);
+  IgnosiWindowSize size = m_Window.GetActualSize();
   glViewport(0, 0, size.Width, size.Height);
 
   // configure global opengl state
   // -----------------------------
   // TODO this should be user configurable.
   glEnable(GL_DEPTH_TEST);
-
-  return m_pWindow;
 }
 
 void OpenGL_Renderer::AttachedCamera(std::shared_ptr<Camera> camera) {
@@ -91,11 +91,9 @@ void OpenGL_Renderer::ClearDepthBuffer() const { glClear(GL_DEPTH_BUFFER_BIT); }
 
 void OpenGL_Renderer::ClearColorBuffer() const { glClear(GL_COLOR_BUFFER_BIT); }
 
-void OpenGL_Renderer::SwapBuffers() const {
-  if (m_pWindow) {
-    system::WindowSwapBuffers(m_pWindow);
-    system::WindowPollEvents(m_pWindow);
-  }
+void OpenGL_Renderer::SwapBuffers() {
+  m_Window.SwapBuffers();
+  m_Window.PollEvents();
 }
 
 void OpenGL_Renderer::Draw(const Mesh& mesh) const {
