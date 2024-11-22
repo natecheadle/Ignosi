@@ -10,39 +10,32 @@ find_package(fmt CONFIG REQUIRED)
 
 add_library(
   ${PROJECT_NAME}
-  "irenderer.cpp"
-  "opengl/opengl_renderer.cpp"
-  "opengl/opengl_vertex_buffer.cpp"
-  "opengl/shader/compute_opengl_shader.cpp"
-  "opengl/shader/fragment_opengl_shader.cpp"
-  "opengl/shader/geometry_opengl_shader.cpp"
-  "opengl/shader/opengl_shader.cpp"
-  "opengl/shader/opengl_shader_program.cpp"
-  "opengl/shader/vertex_opengl_shader.cpp"
-  "opengl/texture/opengl_texture.cpp"
-  "shader/preprocessor.cpp"
-  "shader/shader.cpp"
-  "texture/color.cpp"
-  "texture/color_rgb.cpp"
-  "texture/image_file.cpp"
-  "texture/material.cpp"
-  "texture/stb_implementation.cpp"
-  "texture/texture.cpp"
-  "camera/camera.cpp"
-  "camera/camera_2d.cpp"
-  "camera/camera_fly.cpp"
-  "objects/mesh.cpp")
-
-if(BUILD_SHARED_LIBS AND WIN32)
-  target_compile_definitions(
-    ${PROJECT_NAME}
-    PRIVATE "RENDER_EXPORT_SPEC=__declspec(dllexport)"
-    INTERFACE "RENDER_EXPORT_SPEC=__declspec(dllimport)")
-else()
-  target_compile_definitions(${PROJECT_NAME} PUBLIC "RENDER_EXPORT_SPEC=")
-endif()
+  "detail/irenderer.cpp"
+  "detail/opengl/opengl_renderer.cpp"
+  "detail/opengl/opengl_vertex_buffer.cpp"
+  "detail/opengl/shader/compute_opengl_shader.cpp"
+  "detail/opengl/shader/fragment_opengl_shader.cpp"
+  "detail/opengl/shader/geometry_opengl_shader.cpp"
+  "detail/opengl/shader/opengl_shader.cpp"
+  "detail/opengl/shader/opengl_shader_program.cpp"
+  "detail/opengl/shader/vertex_opengl_shader.cpp"
+  "detail/opengl/texture/opengl_texture.cpp"
+  "detail/shader/preprocessor.cpp"
+  "detail/shader/shader.cpp"
+  "detail/texture/color.cpp"
+  "detail/texture/color_rgb.cpp"
+  "detail/texture/image_file.cpp"
+  "detail/texture/material.cpp"
+  "detail/texture/stb_implementation.cpp"
+  "detail/texture/texture.cpp"
+  "detail/camera/camera.cpp"
+  "detail/camera/camera_2d.cpp"
+  "detail/camera/camera_fly.cpp"
+  "detail/objects/mesh.cpp")
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(${PROJECT_NAME}
+                           PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/detail/)
 target_include_directories(${PROJECT_NAME} PRIVATE ${OPENGL_INCLUDE_DIR})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt OpenGL::GL glad::glad)
