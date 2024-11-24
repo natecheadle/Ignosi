@@ -5,3 +5,4 @@ project(${PROJECT_NAME}-demos)
 enable_language(CXX)
 
 add_subdirectory("empty")
+add_subdirectory("hello_triangle")
